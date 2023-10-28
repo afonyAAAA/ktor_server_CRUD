@@ -1,0 +1,25 @@
+version '3.5'
+networks:
+  ktor-network:
+services:
+  postgres:
+    image: postgres:latest
+    container-name: my-postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+
+ktor-server:
+  build:
+    context: .
+  container_name: my-ktor-server
+  ports:
+    - "8080:8080"
+  depends_on:
+    - postgres
+  networks:
+    - ktor-network
