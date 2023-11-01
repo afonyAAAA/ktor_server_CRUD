@@ -9,36 +9,40 @@ import java.sql.*
 import kotlinx.coroutines.*
 
 fun Application.configureDatabases() {
+
     val dbConnection: Connection = connectToPostgres(embedded = true)
     val bookService = BookService(dbConnection)
+
     routing {
-        // Create city
         post("/addBook") {
             val book = call.receive<Book>()
             val id = bookService.create(book)
-            call.respond(HttpStatusCode.Created, id)
+            call.respond(HttpStatusCode.Created, "ID созданной книги: $id")
         }
-        // Read city
+
         get("/books") {
             try {
                 val city = bookService.read()
-                call.respond(HttpStatusCode.OK, city)
+                if(city.isEmpty()){
+                    throw Exception()
+                }else{
+                    call.respond(HttpStatusCode.OK, city)
+                }
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.NotFound)
+                call.respond(HttpStatusCode.NotFound, "Таблица книг пуста")
             }
         }
-        // Update city
-        get("/updateBook") {
+
+        post("/updateBook") {
             val id = call.request.queryParameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
             val user = call.receive<Book>()
             bookService.update(id, user)
-            call.respond(HttpStatusCode.OK)
+            call.respond(HttpStatusCode.OK, "Данные книги обновлены")
         }
-        // Delete city
-        get("/deleteBook") {
-            val id = call.request.queryParameters["id"]?.toInt() ?: throw IllegalArgumentException("Invalid ID")
-            bookService.delete(id)
-            call.respond(HttpStatusCode.OK)
+
+        get("/deleteAllBooks") {
+            bookService.deleteAllBooks()
+            call.respond(HttpStatusCode.OK, "Все книги... УНИЧТОЖЕНЫ!")
         }
     }
 }
@@ -67,7 +71,7 @@ fun Application.configureDatabases() {
 fun Application.connectToPostgres(embedded: Boolean): Connection {
     Class.forName("org.postgresql.Driver")
     if (embedded) {
-        return DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin123")
+        return DriverManager.getConnection("jdbc:postgresql://postgres:5432/postgres", "postgres", "admin123")
     } else {
         val url = environment.config.property("postgres.url").getString()
         val user = environment.config.property("postgres.user").getString()

@@ -1,10 +1,10 @@
-version '3.5'
+version: '3.5'
 networks:
   ktor-network:
 services:
   postgres:
     image: postgres:latest
-    container-name: my-postgres
+    container_name: my-postgres
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
@@ -12,14 +12,18 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - ./postgres/date:/var/lib/postgresql/data
+    networks:
+      - ktor-network
+    command: ["postgres", "-c", "listen_addresses=0.0.0.0"]
 
-ktor-server:
-  build:
-    context: .
-  container_name: my-ktor-server
-  ports:
-    - "8080:8080"
-  depends_on:
-    - postgres
-  networks:
-    - ktor-network
+  ktor_server:
+    build:
+      context: .
+    container_name: my-ktor-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - ktor-network
