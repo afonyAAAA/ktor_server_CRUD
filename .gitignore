@@ -1,6 +1,7 @@
 .gradle
-build/
+build
 postgres
+!build/libs
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
