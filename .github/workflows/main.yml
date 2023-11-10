@@ -1,4 +1,4 @@
-name: node_app
+name: ktor_app
 
 on:
   push:
@@ -29,5 +29,5 @@ jobs:
                  context: .
                  file: ./docker-compose.yaml
                  push: true
-                 tags: ${{ secrets.DOCKERHUB_USERNAME  }}/clockbox:latest
+                 tags: ${{ secrets.DOCKERHUB_USERNAME  }}/ktor:latest
                  
