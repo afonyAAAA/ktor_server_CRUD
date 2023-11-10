@@ -16,7 +16,7 @@ version: '3.5'
       networks:
         - ktor-network
       command: ["postgres", "-c", "listen_addresses=0.0.0.0"]
-  
+
     ktor_server:
       build:
         context: .
